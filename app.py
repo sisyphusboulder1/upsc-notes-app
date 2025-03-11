@@ -2,80 +2,99 @@ import streamlit as st
 import plotly.graph_objects as go
 import math
 
-# Custom CSS for visual appeal
+# Custom CSS with modern UX/UI
 st.markdown("""
     <style>
     body {
-        background: linear-gradient(135deg, #e0eafc, #cfdef3);
-        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(120deg, #eceff1, #b0bec5);
+        font-family: 'Roboto', sans-serif;
+        color: #263238;
     }
     .stButton>button {
-        background: linear-gradient(90deg, #4CAF50, #66BB6A);
+        background: linear-gradient(90deg, #0288d1, #03a9f4);
         color: white;
-        border-radius: 15px;
+        border-radius: 12px;
         padding: 15px 30px;
-        font-size: 20px;
-        font-weight: bold;
+        font-size: 18px;
+        font-weight: 500;
         border: none;
-        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        width: 100%;
     }
     .stButton>button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        background: linear-gradient(90deg, #45a049, #5cb85c);
+        background: linear-gradient(90deg, #0277bd, #039be5);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        transform: translateY(-2px);
     }
     .main {
-        background-color: white;
+        background: white;
         padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        margin: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin: 20px 0;
     }
     h1 {
-        color: #1a3c34;
-        font-size: 36px;
+        color: #01579b;
+        font-size: 40px;
+        font-weight: 700;
         text-align: center;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
     }
     h2 {
-        color: #2c3e50;
+        color: #0288d1;
         font-size: 28px;
+        font-weight: 600;
         text-align: center;
+    }
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .stMarkdown {
         font-size: 16px;
-        line-height: 1.8;
-        color: #34495e;
+        line-height: 1.7;
+        color: #37474f;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Main app
-st.title("UPSC Polity Notes Dashboard")
+st.title("UPSC Polity Notes")
 
-# Tile layout
-st.header("Explore Topics")
-col1, col2, col3 = st.columns([1, 1, 1])
+# Tile layout with cards
+st.markdown("### Explore Topics", unsafe_allow_html=True)
+cols = st.columns(3)
 
-with col1:
+with cols[0]:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
     if st.button("Municipalities"):
         st.session_state['page'] = "Municipalities"
     else:
         st.session_state.setdefault('page', None)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with col2:
-    st.write("Coming Soon...")
-with col3:
-    st.write("Coming Soon...")
+with cols[1]:
+    st.markdown('<div class="card"><p style="text-align:center; color:#78909c;">Coming Soon</p></div>', unsafe_allow_html=True)
+with cols[2]:
+    st.markdown('<div class="card"><p style="text-align:center; color:#78909c;">Coming Soon</p></div>', unsafe_allow_html=True)
 
 # Municipalities Page
 if st.session_state['page'] == "Municipalities":
-    st.header("Municipalities in India (74th CAA)")
+    st.markdown('<div class="main">', unsafe_allow_html=True)
+    st.header("Municipalities in India")
 
-    # Mind Map Data (radial layout with better colors)
+    # Mind Map Data
     nodes = [
-        {"id": "Municipalities", "label": "Municipalities", "radius": 0, "angle": 0, "color": "#34495e", "details": "Central topic: Urban governance under 74th CAA."},
-        {"id": "Composition", "label": "Composition & Structure", "radius": 200, "angle": 0, "color": "#2980b9", "details": """
+        {"id": "Municipalities", "label": "Municipalities", "radius": 0, "angle": 0, "color": "#01579b", "details": "Urban governance under 74th CAA."},
+        {"id": "Composition", "label": "Composition & Structure", "radius": 200, "angle": 0, "color": "#0288d1", "details": """
             - Wards: Every municipal area divided into territorial constituencies termed wards.
             - Ward Members: Directly elected by electorate.
             - Municipal Body: 
@@ -90,7 +109,7 @@ if st.session_state['page'] == "Municipalities":
               - Chairperson: Ward member (single) or elected (multi-ward).
               - Functions: State-defined.
         """},
-        {"id": "Types", "label": "Types of Municipal Bodies", "radius": 200, "angle": 45, "color": "#27ae60", "details": """
+        {"id": "Types", "label": "Types of Municipal Bodies", "radius": 200, "angle": 45, "color": "#4caf50", "details": """
             - Classified by: Population, density, revenue, employment, economic importance.
             - Types:
               - Municipal Corporation (large cities).
@@ -101,7 +120,7 @@ if st.session_state['page'] == "Municipalities":
               - Township Area Committee: Industrial towns.
               - Notified Area Committee: Fast-developing towns.
         """},
-        {"id": "Powers", "label": "Powers & Authorities", "radius": 200, "angle": 90, "color": "#d35400", "details": """
+        {"id": "Powers", "label": "Powers & Authorities", "radius": 200, "angle": 90, "color": "#f57c00", "details": """
             - District Planning Committee (DPC) (Art. 243ZD):
               - Consolidates Panchayat + Municipality plans.
               - 4/5 elected, 1/5 nominated.
@@ -110,13 +129,13 @@ if st.session_state['page'] == "Municipalities":
               - Standing Committee (elected).
               - Nominated experts.
         """},
-        {"id": "Context", "label": "Context & Figures", "radius": 200, "angle": 135, "color": "#8e44ad", "details": """
+        {"id": "Context", "label": "Context & Figures", "radius": 200, "angle": 135, "color": "#8e24aa", "details": """
             - 2025: >40% urban; 2050: Urban nation.
             - Cities: 65% GDP.
             - Challenges: Planning, environment, waste.
             - ₹40T needed (NITI Aayog).
         """},
-        {"id": "Challenges", "label": "Challenges", "radius": 200, "angle": 180, "color": "#c0392b", "details": """
+        {"id": "Challenges", "label": "Challenges", "radius": 200, "angle": 180, "color": "#d32f2f", "details": """
             1. Financial Paucity: 0.15% GDP.
             2. Corruption: Underpaid staff.
             3. State Control: Dissolution, budget approval.
@@ -130,7 +149,7 @@ if st.session_state['page'] == "Municipalities":
             11. Low Participation.
             12. Ecological Challenges.
         """},
-        {"id": "Recommendations", "label": "Recommendations", "radius": 200, "angle": 225, "color": "#f39c12", "details": """
+        {"id": "Recommendations", "label": "Recommendations", "radius": 200, "angle": 225, "color": "#fbc02d", "details": """
             - National Commission on Urbanization.
             - Transparency: Open data.
             - Direct Mayors + Commissioner consultation.
@@ -138,7 +157,7 @@ if st.session_state['page'] == "Municipalities":
             - 2nd ARC: Property tax reform, fines, bonds.
             - Property Tax Issues: Poor delegation, exemptions, corruption.
         """},
-        {"id": "CaseStudies", "label": "Case Studies", "radius": 200, "angle": 270, "color": "#9b59b6", "details": """
+        {"id": "CaseStudies", "label": "Case Studies", "radius": 200, "angle": 270, "color": "#7b1fa2", "details": """
             1. Ahmedabad: AJL (BRTS, PPP).
             2. Pune: Waste management (door-to-door, segregation).
             3. Surat: Tech infra, parks (post-1994 plague).
@@ -154,7 +173,7 @@ if st.session_state['page'] == "Municipalities":
         y_vals.append(y)
         labels.append(node["label"])
         colors.append(node["color"])
-        hovertexts.append(f"<b>{node['label']}</b><br>{node['details']}")
+        hovertexts.append(f"<b>{node['label']}</b><br><br>{node['details']}")
 
     # Edges
     edge_x, edge_y = [], []
@@ -169,7 +188,7 @@ if st.session_state['page'] == "Municipalities":
     fig.add_trace(go.Scatter(
         x=edge_x, y=edge_y,
         mode="lines",
-        line=dict(color="#bdc3c7", width=3, dash="dash"),
+        line=dict(color="#90a4ae", width=2, dash="dot"),
         hoverinfo="none"
     ))
 
@@ -177,39 +196,43 @@ if st.session_state['page'] == "Municipalities":
     fig.add_trace(go.Scatter(
         x=x_vals, y=y_vals,
         mode="markers+text",
-        marker=dict(size=40, color=colors, line=dict(width=2, color="#ecf0f1")),
+        marker=dict(size=45, color=colors, line=dict(width=3, color="white")),
         text=labels,
         textposition="middle center",
-        textfont=dict(size=16, color="black", family="Segoe UI"),
+        textfont=dict(size=16, color="white", family="Roboto"),
         hovertext=hovertexts,
         hoverinfo="text",
         hoverlabel=dict(
-            bgcolor="rgba(255, 255, 255, 0.9)",
+            bgcolor="rgba(255, 255, 255, 0.95)",
             font_size=14,
-            font_family="Segoe UI",
-            bordercolor="#34495e",
+            font_family="Roboto",
+            font_color="#263238",
+            bordercolor="#b0bec5",
             align="left",
-            namelength=-1  # Show full text without truncation
+            padding=dict(l=15, r=15, t=10, b=10),
+            namelength=-1
         )
     ))
 
     # Layout
     fig.update_layout(
-        title=dict(text="Interactive Mind Map: Municipalities", font_size=24, x=0.5),
+        title=dict(text="Mind Map: Municipalities", font=dict(size=26, color="#01579b"), x=0.5),
         showlegend=False,
-        plot_bgcolor="#ecf0f1",
-        paper_bgcolor="#ecf0f1",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
         height=800,
         width=800,
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        margin=dict(l=60, r=60, t=80, b=60)
+        margin=dict(l=50, r=50, t=80, b=50)
     )
 
-    # Display the mind map
-    with st.container():
+    # Display the mind map in a collapsible section
+    with st.expander("Explore the Mind Map", expanded=True):
         st.plotly_chart(fig, use_container_width=True)
-        st.markdown("*Hover over nodes to see detailed notes in a styled box. Use this for quick recall and revision!*", unsafe_allow_html=True)
+        st.markdown("*Hover over nodes for detailed insights. Click and drag to explore!*", unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 else:
-    st.write("Click the 'Municipalities' tile to explore!")
+    st.markdown('<div class="main"><p style="text-align:center; font-size:18px;">Select a topic above to dive in!</p></div>', unsafe_allow_html=True)
