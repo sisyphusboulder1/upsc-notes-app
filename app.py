@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.graph_objects as go
+import math
 
 # Custom CSS for visual appeal
 st.markdown("""
@@ -11,21 +12,27 @@ st.markdown("""
     .stButton>button {
         background-color: #4CAF50;
         color: white;
-        border-radius: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 18px;
+        transition: background-color 0.3s;
     }
     .stButton>button:hover {
         background-color: #45a049;
     }
     .main {
         background-color: white;
-        padding: 20px;
+        padding: 25px;
         border-radius: 15px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    h1, h2, h3 {
+    h1, h2 {
         color: #2c3e50;
+        text-align: center;
+    }
+    .stMarkdown {
+        font-size: 16px;
+        line-height: 1.6;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -52,10 +59,10 @@ with col3:
 if st.session_state['page'] == "Municipalities":
     st.header("Municipalities in India (74th CAA)")
 
-    # Mind Map Data (from your notes)
+    # Mind Map Data (radial layout)
     nodes = [
-        {"id": "Municipalities", "label": "Municipalities in India", "x": 0, "y": 0, "z": 0, "color": "#2c3e50", "details": "Central topic covering urban governance under 74th CAA."},
-        {"id": "Composition", "label": "Composition & Structure", "x": 1, "y": 1, "z": 1, "color": "#3498db", "details": """
+        {"id": "Municipalities", "label": "Municipalities", "radius": 0, "angle": 0, "color": "#2c3e50", "details": "Central topic: Urban governance under 74th CAA."},
+        {"id": "Composition", "label": "Composition & Structure", "radius": 150, "angle": 0, "color": "#3498db", "details": """
             - Wards: Every municipal area divided into territorial constituencies termed wards.
             - Ward Members: Directly elected by electorate.
             - Municipal Body: 
@@ -70,7 +77,7 @@ if st.session_state['page'] == "Municipalities":
               - Chairperson: Ward member (single) or elected (multi-ward).
               - Functions: State-defined.
         """},
-        {"id": "Types", "label": "Types of Municipal Bodies", "x": -1, "y": 1, "z": 1, "color": "#2ecc71", "details": """
+        {"id": "Types", "label": "Types of Municipal Bodies", "radius": 150, "angle": 45, "color": "#2ecc71", "details": """
             - Classified by: Population, density, revenue, employment, economic importance.
             - Types:
               - Municipal Corporation (large cities).
@@ -81,7 +88,7 @@ if st.session_state['page'] == "Municipalities":
               - Township Area Committee: Industrial towns.
               - Notified Area Committee: Fast-developing towns.
         """},
-        {"id": "Powers", "label": "Powers & Authorities", "x": 1, "y": -1, "z": 1, "color": "#e67e22", "details": """
+        {"id": "Powers", "label": "Powers & Authorities", "radius": 150, "angle": 90, "color": "#e67e22", "details": """
             - District Planning Committee (DPC) (Art. 243ZD):
               - Consolidates Panchayat + Municipality plans.
               - 4/5 elected, 1/5 nominated.
@@ -90,13 +97,13 @@ if st.session_state['page'] == "Municipalities":
               - Standing Committee (elected).
               - Nominated experts.
         """},
-        {"id": "Context", "label": "Context & Figures", "x": -1, "y": -1, "z": 1, "color": "#9b59b6", "details": """
+        {"id": "Context", "label": "Context & Figures", "radius": 150, "angle": 135, "color": "#9b59b6", "details": """
             - 2025: >40% urban; 2050: Urban nation.
             - Cities: 65% GDP.
             - Challenges: Planning, environment, waste.
             - ₹40T needed (NITI Aayog).
         """},
-        {"id": "Challenges", "label": "Challenges", "x": 1, "y": 0, "z": -1, "color": "#e74c3c", "details": """
+        {"id": "Challenges", "label": "Challenges", "radius": 150, "angle": 180, "color": "#e74c3c", "details": """
             1. Financial Paucity: 0.15% GDP.
             2. Corruption: Underpaid staff.
             3. State Control: Dissolution, budget approval.
@@ -110,7 +117,7 @@ if st.session_state['page'] == "Municipalities":
             11. Low Participation.
             12. Ecological Challenges.
         """},
-        {"id": "Recommendations", "label": "Recommendations", "x": -1, "y": 0, "z": -1, "color": "#f1c40f", "details": """
+        {"id": "Recommendations", "label": "Recommendations", "radius": 150, "angle": 225, "color": "#f1c40f", "details": """
             - National Commission on Urbanization.
             - Transparency: Open data.
             - Direct Mayors + Commissioner consultation.
@@ -118,63 +125,70 @@ if st.session_state['page'] == "Municipalities":
             - 2nd ARC: Property tax reform, fines, bonds.
             - Property Tax Issues: Poor delegation, exemptions, corruption.
         """},
-        {"id": "CaseStudies", "label": "Case Studies", "x": 0, "y": 1, "z": -1, "color": "#8e44ad", "details": """
+        {"id": "CaseStudies", "label": "Case Studies", "radius": 150, "angle": 270, "color": "#8e44ad", "details": """
             1. Ahmedabad: AJL (BRTS, PPP).
             2. Pune: Waste management (door-to-door, segregation).
             3. Surat: Tech infra, parks (post-1994 plague).
         """}
     ]
 
-    # Edges for the mind map
-    edges = [
-        ("Municipalities", "Composition"), ("Municipalities", "Types"), ("Municipalities", "Powers"),
-        ("Municipalities", "Context"), ("Municipalities", "Challenges"), ("Municipalities", "Recommendations"),
-        ("Municipalities", "CaseStudies")
-    ]
+    # Convert polar coordinates to Cartesian for Plotly
+    x_vals, y_vals, labels, colors, hovertexts = [], [], [], [], []
+    for node in nodes:
+        x = node["radius"] * math.cos(math.radians(node["angle"]))
+        y = node["radius"] * math.sin(math.radians(node["angle"]))
+        x_vals.append(x)
+        y_vals.append(y)
+        labels.append(node["label"])
+        colors.append(node["color"])
+        hovertexts.append(node["details"])
 
-    # Create 3D Mind Map with Plotly
+    # Edges
+    edge_x, edge_y = [], []
+    for i in range(1, len(nodes)):
+        edge_x.extend([0, x_vals[i], None])
+        edge_y.extend([0, y_vals[i], None])
+
+    # Create the mind map
     fig = go.Figure()
 
-    # Add nodes
-    for node in nodes:
-        fig.add_trace(go.Scatter3d(
-            x=[node["x"]], y=[node["y"]], z=[node["z"]],
-            mode="markers+text",
-            marker=dict(size=20, color=node["color"]),
-            text=[node["label"]],
-            hovertext=[node["details"]],
-            hoverinfo="text",
-            textposition="middle center"
-        ))
-
     # Add edges
-    for edge in edges:
-        x0, y0, z0 = next(n["x"] for n in nodes if n["id"] == edge[0]), next(n["y"] for n in nodes if n["id"] == edge[0]), next(n["z"] for n in nodes if n["id"] == edge[0])
-        x1, y1, z1 = next(n["x"] for n in nodes if n["id"] == edge[1]), next(n["y"] for n in nodes if n["id"] == edge[1]), next(n["z"] for n in nodes if n["id"] == edge[1])
-        fig.add_trace(go.Scatter3d(
-            x=[x0, x1], y=[y0, y1], z=[z0, z1],
-            mode="lines",
-            line=dict(color="gray", width=2),
-            hoverinfo="none"
-        ))
+    fig.add_trace(go.Scatter(
+        x=edge_x, y=edge_y,
+        mode="lines",
+        line=dict(color="gray", width=2),
+        hoverinfo="none"
+    ))
 
-    # Layout for 3D effect
+    # Add nodes
+    fig.add_trace(go.Scatter(
+        x=x_vals, y=y_vals,
+        mode="markers+text",
+        marker=dict(size=30, color=colors, line=dict(width=2, color="white")),
+        text=labels,
+        textposition="middle center",
+        textfont=dict(size=14, color="white"),
+        hovertext=hovertexts,
+        hoverinfo="text",
+        hoverlabel=dict(bgcolor="white", font_size=12)
+    ))
+
+    # Layout
     fig.update_layout(
-        title="Interactive 3D Mind Map: Municipalities",
-        scene=dict(
-            xaxis=dict(showgrid=True, zeroline=True, title=""),
-            yaxis=dict(showgrid=True, zeroline=True, title=""),
-            zaxis=dict(showgrid=True, zeroline=True, title=""),
-            bgcolor="#ecf0f1"
-        ),
+        title="Interactive Mind Map: Municipalities",
         showlegend=False,
-        height=600,
-        margin=dict(l=0, r=0, t=50, b=0)
+        plot_bgcolor="#ecf0f1",
+        paper_bgcolor="#ecf0f1",
+        height=700,
+        width=700,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        margin=dict(l=50, r=50, t=50, b=50)
     )
 
     # Display the mind map
     st.plotly_chart(fig, use_container_width=True)
-    st.write("*Hover over nodes to see detailed notes from your class!*")
+    st.markdown("*Hover over nodes for detailed notes. Use this visual aid to chunk and recall key concepts!*", unsafe_allow_html=True)
 
 else:
     st.write("Click the 'Municipalities' tile to explore!")
